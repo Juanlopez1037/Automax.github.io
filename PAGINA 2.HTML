@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Venta de Vehículos Usados</title>
+    <style>
+        :root {
+          --rojo: #e53935;
+          --negro: #181818;
+          --naranja: #ff9800;
+          --gris: #222;
+          --gris-oscuro: #444;
+          --borde: #e0e0e0;
+        }
+        body {
+          font-family: 'Segoe UI', Arial, sans-serif;
+          margin: 0; padding: 0;
+          background: var(--negro);
+          color: #fff;
+          min-height: 100vh;
+        }
+        header {
+          background: var(--rojo);
+          color: white;
+          padding: 18px 32px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          box-shadow: 0 2px 8px rgba(34,34,34,0.08);
+        }
+        .logo {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+        }
+        .logo img {
+          height: 54px;
+          border-radius: 10px;
+          background: white;
+          padding: 4px;
+        }
+        .logo h1 {
+          margin: 0;
+          font-size: 1.7rem;
+          letter-spacing: 1px;
+          font-weight: 700;
+          text-shadow: 1px 1px 2px #0002;
+        }
+        .social-icons {
+          display: flex;
+          gap: 16px;
+        }
+        .social-icons a {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: transparent;
+          transition: box-shadow 0.2s, transform 0.2s;
+          box-shadow: 0 2px 8px #0002;
+        }
+        .social-icons a:hover {
+          transform: scale(1.08);
+          box-shadow: 0 4px 16px #0004;
+        }
+        /* Menú principal */
+        #mainMenu {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 32px;
+          margin: 28px auto 18px auto;
+          background: var(--negro);
+          border-bottom: 3px solid var(--rojo);
+          box-shadow: 0 2px 8px #0001;
+          padding: 0 0 0 0;
+          position: relative;
+          z-index: 10;
+          width: 100%;
+          max-width: 900px;
+          border-radius: 0 0 18px 18px;
+        }
+        #mainMenu button {
+          background: linear-gradient(90deg, var(--rojo) 60%, var(--naranja) 100%);
+          border: none;
+          color: #fff;
+          font-size: 1.15rem;
+          font-weight: 600;
+          padding: 14px 38px;
+          cursor: pointer;
+          border-radius: 18px;
+          border-bottom: 3px solid transparent;
+          transition: 
+            background 0.2s, 
+            border-bottom 0.2s, 
+            color 0.2s, 
+            box-shadow 0.2s,
+            transform 0.15s;
+          letter-spacing: 1px;
+          box-shadow: 0 2px 12px #e5393530, 0 1.5px 6px #0002;
+          margin-bottom: 0;
+          outline: none;
+          position: relative;
+          overflow: hidden;
+        }
+        #mainMenu button.active,
+        #mainMenu button:hover {
+          background: linear-gradient(90deg, var(--naranja) 0%, var(--rojo) 100%);
+          color: #fff;
+          border-bottom: 3px solid var(--naranja);
+          box-shadow: 0 4px 24px #e5393530, 0 2px 8px #0003;
+          transform: translateY(-2px) scale(1.04);
+        }
+        /* Botón flotante WhatsApp */
+        #whatsapp-btn {
+          position: fixed;
+          bottom: 25px;
+          right: 25px;
+          background: #25d366; /* color original WhatsApp */
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+          cursor: pointer;
+          transition: background 0.3s;
+          z-index: 1000;
+        }
+        #whatsapp-btn:hover {
+          background: #128c4a; /* color hover WhatsApp */
+        }
+        #whatsapp-btn svg {
+          width: 32px;
+          height: 32px;
+          fill: white;
+        }
+        /* Modernizar scroll y detalles */
+        ::selection {
+          background: var(--naranja);
+          color: #fff;
+        }
+        ::-webkit-scrollbar {
+          width: 10px;
+          background: var(--gris);
+        }
+        ::-webkit-scrollbar-thumb {
+          background: var(--naranja);
+          border-radius: 6px;
+        }
+        /* Estilos adicionales para la lista de autos */
+        .car-list {
+          max-width: 1200px;
+          margin: 0 auto 50px;
+          padding: 0 15px;
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+          gap: 28px;
+        }
+        .car-card {
+          background: linear-gradient(120deg, #fff 70%, var(--gris) 100%);
+          border-radius: 14px;
+          box-shadow: 0 4px 16px #0002;
+          overflow: hidden;
+          text-align: left;
+          transition: transform 0.18s, box-shadow 0.18s;
+          border: 1.5px solid var(--borde);
+          display: flex;
+          flex-direction: column;
+          min-height: 410px;
+          cursor: pointer;
+        }
+        .car-card img {
+          width: 100%;
+          height: 200px; /* tamaño mediano */
+          object-fit: cover;
+          border-bottom: 2px solid var(--naranja);
+          background: var(--gris);
+          display: block;
+        }
+        .car-card-info {
+          padding: 0 18px 18px 18px;
+        }
+        .car-card h3,
+        .car-card p {
+          color: #181818 !important;
+        }
+        /* Nuevos estilos para el layout de usados */
+        .usados-layout {
+          display: flex;
+          gap: 32px;
+          align-items: flex-start;
+          margin-top: 24px;
+        }
+        #brandNav {
+          min-width: 220px;
+          background: #232323;
+          border-radius: 18px;
+          box-shadow: 0 4px 24px #0003;
+          padding: 18px 0 18px 0;
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+          position: sticky;
+          top: 30px;
+          height: fit-content;
+        }
+        #brandNav ul {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+        }
+        #brandNav li {
+          margin: 0;
+          padding: 0;
+        }
+        #brandNav button {
+          width: 100%;
+          background: none;
+          border: none;
+          color: #fff;
+          font-size: 1.08rem;
+          font-weight: 500;
+          text-align: left;
+          padding: 16px 28px 16px 24px;
+          border-left: 4px solid transparent;
+          border-radius: 0 18px 18px 0;
+          transition: 
+            background 0.18s, 
+            color 0.18s, 
+            border-left 0.18s,
+            box-shadow 0.18s;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          letter-spacing: 0.5px;
+          outline: none;
+          margin-bottom: 2px;
+          box-shadow: 0 1px 0 #fff1 inset;
+        }
+        #brandNav button.active,
+        #brandNav button:hover {
+          background: linear-gradient(90deg, var(--rojo) 60%, var(--naranja) 100%);
+          color: #fff;
+          border-left: 4px solid var(--naranja);
+          box-shadow: 0 2px 12px #e5393530;
+        }
+        #brandNav .brand-count {
+          background: #fff2;
+          color: var(--naranja);
+          font-size: 0.98rem;
+          font-weight: 700;
+          border-radius: 10px;
+          padding: 2px 10px;
+          margin-left: 10px;
+          min-width: 28px;
+          text-align: center;
+          display: inline-block;
+        }
+        @media (max-width: 900px) {
+          .usados-layout {
+            flex-direction: column;
+            gap: 0;
+          }
+          #brandNav {
+            position: static;
+            width: 100%;
+            margin-bottom: 18px;
+            border-radius: 16px;
+          }
+        }
+    </style>
+    <script>
+    // Datos de vehículos (ahora 28 autos, más variedad y marcas)
+    const cars = [
+      { brand: 'Toyota', model: 'Corolla', year: 2020, price: 52000000, priceStr: '$52,000,000', km: '30,000 km', features: 'Automático, Aire Acondicionado', img: 'https://via.placeholder.com/300x180?text=Toyota+Corolla' },
+      { brand: 'Toyota', model: 'Yaris', year: 2019, price: 45000000, priceStr: '$45,000,000', km: '40,000 km', features: 'Manual, Bluetooth', img: 'https://via.placeholder.com/300x180?text=Toyota+Yaris' },
+      { brand: 'Toyota', model: 'RAV4', year: 2021, price: 90000000, priceStr: '$90,000,000', km: '15,000 km', features: 'SUV, Automático', img: 'https://via.placeholder.com/300x180?text=Toyota+RAV4' },
+      { brand: 'Toyota', model: 'Hilux', year: 2022, price: 120000000, priceStr: '$120,000,000', km: '8,000 km', features: 'Pick-up, 4x4', img: 'https://via.placeholder.com/300x180?text=Toyota+Hilux' },
+      { brand: 'Chevrolet', model: 'Onix', year: 2021, price: 48000000, priceStr: '$48,000,000', km: '20,000 km', features: 'Automático, Full Equipo', img: 'https://via.placeholder.com/300x180?text=Chevrolet+Onix' },
+      { brand: 'Chevrolet', model: 'Spark GT', year: 2018, price: 30000000, priceStr: '$30,000,000', km: '60,000 km', features: 'Manual, Económico', img: 'https://via.placeholder.com/300x180?text=Chevrolet+Spark+GT' },
+      { brand: 'Chevrolet', model: 'Camaro', year: 2019, price: 160000000, priceStr: '$160,000,000', km: '10,000 km', features: 'Deportivo, Automático', img: 'https://via.placeholder.com/300x180?text=Chevrolet+Camaro' },
+      { brand: 'Chevrolet', model: 'Tracker', year: 2022, price: 78000000, priceStr: '$78,000,000', km: '7,000 km', features: 'SUV, Automático', img: 'https://via.placeholder.com/300x180?text=Chevrolet+Tracker' },
+      { brand: 'Mazda', model: 'Mazda 3', year: 2022, price: 60000000, priceStr: '$60,000,000', km: '10,000 km', features: 'Automático, Lujo', img: 'https://via.placeholder.com/300x180?text=Mazda+3' },
+      { brand: 'Mazda', model: 'CX-5', year: 2021, price: 75000000, priceStr: '$75,000,000', km: '15,000 km', features: 'SUV, Full Equipo', img: 'https://via.placeholder.com/300x180?text=Mazda+CX-5' },
+      { brand: 'Mazda', model: 'MX-5', year: 2020, price: 85000000, priceStr: '$85,000,000', km: '5,000 km', features: 'Convertible, Deportivo', img: 'https://via.placeholder.com/300x180?text=Mazda+MX-5' },
+      { brand: 'Mazda', model: 'BT-50', year: 2019, price: 95000000, priceStr: '$95,000,000', km: '18,000 km', features: 'Pick-up, 4x4', img: 'https://via.placeholder.com/300x180?text=Mazda+BT-50' },
+      { brand: 'Renault', model: 'Duster', year: 2020, price: 55000000, priceStr: '$55,000,000', km: '25,000 km', features: 'SUV, Manual', img: 'https://via.placeholder.com/300x180?text=Renault+Duster' },
+      { brand: 'Renault', model: 'Logan', year: 2019, price: 35000000, priceStr: '$35,000,000', km: '50,000 km', features: 'Sedán, Aire Acondicionado', img: 'https://via.placeholder.com/300x180?text=Renault+Logan' },
+      { brand: 'Renault', model: 'Captur', year: 2021, price: 72000000, priceStr: '$72,000,000', km: '18,000 km', features: 'SUV, Automático', img: 'https://via.placeholder.com/300x180?text=Renault+Captur' },
+      { brand: 'Renault', model: 'Kwid', year: 2022, price: 32000000, priceStr: '$32,000,000', km: '12,000 km', features: 'Compacto, Manual', img: 'https://via.placeholder.com/300x180?text=Renault+Kwid' },
+      { brand: 'Kia', model: 'Picanto', year: 2020, price: 40000000, priceStr: '$40,000,000', km: '30,000 km', features: 'Compacto, Manual', img: 'https://via.placeholder.com/300x180?text=Kia+Picanto' },
+      { brand: 'Kia', model: 'Sportage', year: 2021, price: 70000000, priceStr: '$70,000,000', km: '12,000 km', features: 'SUV, Automático', img: 'https://via.placeholder.com/300x180?text=Kia+Sportage' },
+      { brand: 'Kia', model: 'Sorento', year: 2019, price: 90000000, priceStr: '$90,000,000', km: '20,000 km', features: 'SUV, Full Equipo', img: 'https://via.placeholder.com/300x180?text=Kia+Sorento' },
+      { brand: 'Kia', model: 'Cerato', year: 2022, price: 58000000, priceStr: '$58,000,000', km: '9,000 km', features: 'Sedán, Automático', img: 'https://via.placeholder.com/300x180?text=Kia+Cerato' },
+      { brand: 'Ford', model: 'Focus', year: 2018, price: 38000000, priceStr: '$38,000,000', km: '45,000 km', features: 'Sedán, Manual', img: 'https://via.placeholder.com/300x180?text=Ford+Focus' },
+      { brand: 'Ford', model: 'Mustang', year: 2020, price: 140000000, priceStr: '$140,000,000', km: '8,000 km', features: 'Deportivo, Automático', img: 'https://via.placeholder.com/300x180?text=Ford+Mustang' },
+      { brand: 'Ford', model: 'Escape', year: 2021, price: 78000000, priceStr: '$78,000,000', km: '11,000 km', features: 'SUV, Automático', img: 'https://via.placeholder.com/300x180?text=Ford+Escape' },
+      { brand: 'Nissan', model: 'Sentra', year: 2021, price: 48000000, priceStr: '$48,000,000', km: '20,000 km', features: 'Sedán, Automático', img: 'https://via.placeholder.com/300x180?text=Nissan+Sentra' },
+      { brand: 'Nissan', model: 'Frontier', year: 2019, price: 85000000, priceStr: '$85,000,000', km: '30,000 km', features: 'Pick-up, Manual', img: 'https://via.placeholder.com/300x180?text=Nissan+Frontier' },
+      { brand: 'Nissan', model: 'Versa', year: 2022, price: 53000000, priceStr: '$53,000,000', km: '6,000 km', features: 'Sedán, Automático', img: 'https://via.placeholder.com/300x180?text=Nissan+Versa' },
+      { brand: 'Hyundai', model: 'Tucson', year: 2021, price: 72000000, priceStr: '$72,000,000', km: '15,000 km', features: 'SUV, Automático', img: 'https://via.placeholder.com/300x180?text=Hyundai+Tucson' },
+      { brand: 'Hyundai', model: 'HB20', year: 2020, price: 42000000, priceStr: '$42,000,000', km: '22,000 km', features: 'Hatchback, Manual', img: 'https://via.placeholder.com/300x180?text=Hyundai+HB20' }
+    ];
+
+    // Obtener todas las marcas únicas para el menú
+    const brands = [...new Set(cars.map(car => car.brand))].sort();
+
+    function getBrandCounts() {
+      const counts = {};
+      cars.forEach(car => {
+        counts[car.brand] = (counts[car.brand] || 0) + 1;
+      });
+      return counts;
+    }
+
+    function createBrandButtons() {
+      const nav = document.getElementById('brandNav');
+      nav.innerHTML = '';
+      const counts = getBrandCounts();
+      const ul = document.createElement('ul');
+
+      // Botón Todos
+      const allLi = document.createElement('li');
+      const allBtn = document.createElement('button');
+      allBtn.textContent = 'Todos';
+      allBtn.classList.add('active');
+      const allCount = document.createElement('span');
+      allCount.className = 'brand-count';
+      allCount.textContent = cars.length;
+      allBtn.appendChild(allCount);
+      allBtn.onclick = () => {
+        setActiveButton(allBtn);
+        displayCars();
+      };
+      allLi.appendChild(allBtn);
+      ul.appendChild(allLi);
+
+      // Botones por marca
+      brands.forEach(brand => {
+        const li = document.createElement('li');
+        const btn = document.createElement('button');
+        btn.textContent = brand;
+        const countSpan = document.createElement('span');
+        countSpan.className = 'brand-count';
+        countSpan.textContent = counts[brand] || 0;
+        btn.appendChild(countSpan);
+        btn.onclick = () => {
+          setActiveButton(btn);
+          displayCars(brand);
+        };
+        li.appendChild(btn);
+        ul.appendChild(li);
+      });
+
+      nav.appendChild(ul);
+    }
+
+    function setActiveButton(activeBtn) {
+      const buttons = document.querySelectorAll('#brandNav button');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      activeBtn.classList.add('active');
+    }
+
+    // Descripciones generales para cada vehículo (puedes personalizarlas)
+    const carDescriptions = {
+      'Toyota Corolla': 'El Toyota Corolla es reconocido por su fiabilidad, bajo consumo y excelente valor de reventa. Ideal para familias y uso diario.',
+      'Toyota Yaris': 'El Toyota Yaris es compacto, eficiente y fácil de manejar en ciudad. Perfecto para quienes buscan economía y practicidad.',
+      'Toyota RAV4': 'La Toyota RAV4 es una SUV versátil, cómoda y segura, ideal para aventuras y viajes familiares.',
+      'Toyota Hilux': 'La Toyota Hilux es una pick-up robusta, ideal para trabajo y aventura.',
+      'Chevrolet Onix': 'El Chevrolet Onix destaca por su tecnología, seguridad y bajo consumo. Un hatchback moderno y funcional.',
+      'Chevrolet Spark GT': 'El Spark GT es un auto urbano, económico y fácil de estacionar, ideal para la ciudad.',
+      'Chevrolet Camaro': 'El Camaro es un deportivo icónico, potente y con gran diseño. Para quienes buscan emociones fuertes.',
+      'Chevrolet Tracker': 'El Tracker es una SUV compacta, ideal para la ciudad y con buen espacio interior.',
+      'Mazda Mazda 3': 'El Mazda 3 ofrece diseño elegante, manejo ágil y excelente equipamiento.',
+      'Mazda CX-5': 'La Mazda CX-5 es una SUV moderna, cómoda y segura, perfecta para la familia.',
+      'Mazda MX-5': 'El Mazda MX-5 es un convertible deportivo, divertido de conducir y con gran estilo.',
+      'Mazda BT-50': 'La BT-50 es una pick-up robusta, ideal para trabajo y aventura.',
+      'Renault Duster': 'La Renault Duster es una SUV robusta, espaciosa y lista para cualquier terreno.',
+      'Renault Logan': 'El Logan es un sedán amplio, económico y confiable, ideal para familias.',
+      'Renault Captur': 'La Renault Captur combina diseño, tecnología y confort en una SUV compacta.',
+      'Renault Kwid': 'El Kwid es un compacto accesible, ideal para la ciudad y con bajo consumo.',
+      'Kia Picanto': 'El Kia Picanto es un compacto ágil, económico y fácil de conducir en ciudad.',
+      'Kia Sportage': 'La Kia Sportage es una SUV moderna, segura y con gran espacio interior.',
+      'Kia Sorento': 'La Kia Sorento es una SUV de lujo, potente y con capacidad para toda la familia.',
+      'Kia Cerato': 'El Cerato es un sedán elegante, con buen equipamiento y eficiente.',
+      'Ford Focus': 'El Ford Focus es un sedán dinámico, cómodo y eficiente.',
+      'Ford Mustang': 'El Ford Mustang es un muscle car legendario, potente y con gran presencia.',
+      'Ford Escape': 'El Escape es una SUV versátil, ideal para la ciudad y el campo.',
+      'Nissan Sentra': 'El Nissan Sentra es un sedán confiable, espacioso y eficiente.',
+      'Nissan Frontier': 'La Nissan Frontier es una pick-up resistente, ideal para trabajo y aventura.',
+      'Nissan Versa': 'El Versa es un sedán compacto, económico y con buen equipamiento.',
+      'Hyundai Tucson': 'La Hyundai Tucson es una SUV moderna, cómoda y con excelente equipamiento.',
+      'Hyundai HB20': 'El HB20 es un hatchback práctico, económico y con buen espacio interior.'
+    };
+
+    // Función para mostrar descripción en modal
+    function showCarDescription(title, img, desc) {
+      // Si ya existe el modal, elimínalo
+      let oldModal = document.getElementById('carDescModal');
+      if (oldModal) oldModal.remove();
+
+      const modal = document.createElement('div');
+      modal.id = 'carDescModal';
+      modal.style.position = 'fixed';
+      modal.style.top = 0;
+      modal.style.left = 0;
+      modal.style.width = '100vw';
+      modal.style.height = '100vh';
+      modal.style.background = 'rgba(34,34,34,0.65)';
+      modal.style.display = 'flex';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.style.zIndex = 2000;
+
+      modal.innerHTML = `
+        <div style="background:#fff;max-width:400px;width:90vw;border-radius:16px;box-shadow:0 8px 32px #0004;padding:32px 24px 18px 24px;position:relative;animation:fadeIn .2s;">
+          <button id="closeCarDesc" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.7rem;color:var(--rojo);cursor:pointer;">&times;</button>
+          <img src="${img}" alt="${title}" style="width:100%;height:160px;object-fit:cover;border-radius:10px;border-bottom:2px solid var(--naranja);margin-bottom:18px;">
+          <h2 style="color:var(--rojo);margin:0 0 10px 0;font-size:1.3rem;">${title}</h2>
+          <p style="color:#181818;font-size:1.05rem;">${desc}</p>
+        </div>
+        <style>
+          @keyframes fadeIn { from { opacity:0; transform:scale(0.97);} to { opacity:1; transform:scale(1);} }
+        </style>
+      `;
+      document.body.appendChild(modal);
+      document.getElementById('closeCarDesc').onclick = () => modal.remove();
+      modal.onclick = e => { if(e.target === modal) modal.remove(); };
+    }
+
+    function displayCars(filterBrand = null, filterYear = null, filterPrice = null) {
+      const container = document.getElementById('carContainer');
+      container.innerHTML = '';
+
+      // Filtrar según los filtros seleccionados
+      let filteredCars = cars;
+      if (filterBrand) filteredCars = filteredCars.filter(car => car.brand === filterBrand);
+      if (filterYear) filteredCars = filteredCars.filter(car => car.year == filterYear);
+      if (filterPrice) {
+        switch(filterPrice) {
+          case 'under40':
+            filteredCars = filteredCars.filter(car => car.price < 40000000);
+            break;
+          case '40to70':
+            filteredCars = filteredCars.filter(car => car.price >= 40000000 && car.price <= 70000000);
+            break;
+          case 'over70':
+            filteredCars = filteredCars.filter(car => car.price > 70000000);
+            break;
+        }
+      }
+
+      if(filteredCars.length === 0){
+        container.innerHTML = '<p style="grid-column: 1/-1; text-align:center; font-weight:bold; color: var(--rojo);">No hay vehículos que coincidan con los filtros.</p>';
+        return;
+      }
+
+      filteredCars.forEach(car => {
+        const card = document.createElement('div');
+        card.className = 'car-card';
+        card.innerHTML = `
+          <img src="${car.img}" alt="${car.brand} ${car.model}" />
+          <div class="car-card-info">
+            <h3>${car.brand} ${car.model}</h3>
+            <p><strong>Año:</strong> ${car.year}</p>
+            <p><strong>Precio:</strong> ${car.priceStr}</p>
+            <p><strong>Kilometraje:</strong> ${car.km}</p>
+            <p><strong>Características:</strong> ${car.features}</p>
+          </div>
+        `;
+        // Evento para mostrar descripción
+        card.style.cursor = "pointer";
+        card.onclick = () => {
+          const key = `${car.brand} ${car.model}`;
+          showCarDescription(
+            `${car.brand} ${car.model}`,
+            car.img,
+            carDescriptions[key] || "Vehículo usado en excelente estado. ¡Solicita más información!"
+          );
+        };
+        container.appendChild(card);
+      });
+    }
+
+    function handleFilterChange() {
+      const selectedYear = document.getElementById('yearFilter').value;
+      const selectedPrice = document.getElementById('priceFilter').value;
+      // Detect marca activa
+      const activeBtn = document.querySelector('#brandNav button.active');
+      const activeBrand = activeBtn && activeBtn.textContent !== 'Todos' ? activeBtn.textContent : null;
+      displayCars(activeBrand, selectedYear || null, selectedPrice || null);
+    }
+
+    // Menú principal funcional
+    function showSection(section) {
+      document.getElementById('inicioContent').style.display = section === 'inicio' ? '' : 'none';
+      document.getElementById('usadosContent').style.display = section === 'usados' ? '' : 'none';
+      document.getElementById('contactoContent').style.display = section === 'contacto' ? '' : 'none';
+      document.getElementById('inicioBtn').classList.toggle('active', section === 'inicio');
+      document.getElementById('usadosBtn').classList.toggle('active', section === 'usados');
+      document.getElementById('contactoBtn').classList.toggle('active', section === 'contacto');
+      // Si se muestra usados, refresca la lista de autos
+      if(section === 'usados') {
+        createBrandButtons();
+        // Reorganiza el layout solo si no existe
+        if (!document.querySelector('.usados-layout')) {
+          const usadosContent = document.getElementById('usadosContent');
+          const brandNav = document.getElementById('brandNav');
+          const filters = usadosContent.querySelector('.filters');
+          const carContainer = document.getElementById('carContainer');
+          const layoutDiv = document.createElement('div');
+          layoutDiv.className = 'usados-layout';
+          layoutDiv.appendChild(brandNav);
+          const rightDiv = document.createElement('div');
+          rightDiv.style.flex = '1';
+          rightDiv.appendChild(filters);
+          rightDiv.appendChild(carContainer);
+          layoutDiv.appendChild(rightDiv);
+          usadosContent.appendChild(layoutDiv);
+        }
+        displayCars();
+        document.getElementById('yearFilter').addEventListener('change', handleFilterChange);
+        document.getElementById('priceFilter').addEventListener('change', handleFilterChange);
+      }
+    }
+    window.onload = () => {
+      document.getElementById('inicioBtn').onclick = () => showSection('inicio');
+      document.getElementById('usadosBtn').onclick = () => showSection('usados');
+      document.getElementById('contactoBtn').onclick = () => showSection('contacto');
+      showSection('inicio');
+      // Iconos redes sociales
+      const facebookIcon = `<svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="facebook-f" class="svg-inline--fa fa-facebook-f fa-w-10" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" style="width:20px;height:20px;fill:white;"><path d="M279.14 288l14.22-92.66h-88.91V141.09c0-25.35 12.42-50.06 52.24-50.06H293V6.26S259.36 0 225.36 0c-73.22 0-121.15 44.38-121.15 124v70.29H22.89V288h81.32v224h100.2V288z"/></svg>`;
+      const instagramIcon = `<svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="instagram" class="svg-inline--fa fa-instagram fa-w-14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="width:20px;height:20px;fill:white;"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9 114.9-51.3 114.9-114.9S287.7 141 224.1 141zm0 186c-39.5 0-71.5-32-71.5-71.5s32-71.5 71.5-71.5 71.5 32 71.5 71.5-32 71.5-71.5 71.5zm146.4-194.3c0 14.9-12 26.9-26.9 26.9s-26.9-12-26.9-26.9 12-26.9 26.9-26.9 26.9 12 26.9 26.9zm76.1 27.2c-1.7-35.3-9.9-66.7-36.2-92.1C388.7 9.9 357.3 1.7 322 0 286.7-1.7 256.3 9.9 230.9 36.2 205.5 62.5 197.3 93.9 199 129.2c1.7 35.3 9.9 66.7 36.2 92.1 26.3 25.4 57.7 33.6 93 31.9 35.3-1.7 66.7-9.9 92.1-36.2 25.4-26.3 33.6-57.7 31.9-93z"/></svg>`;
+      const tiktokIcon = `<svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="tiktok" class="svg-inline--fa fa-tiktok fa-w-14" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="width:20px;height:20px;fill:white;"><path d="M448,209.9v125.1c0,97.2-78.8,176-176,176s-176-78.8-176-176S174.8,159,272,159c7.1,0,14.1,0.4,21,1.2V0h96v209.9H448z"/></svg>`;
+      document.getElementById('facebook-link').innerHTML = facebookIcon;
+      document.getElementById('instagram-link').innerHTML = instagramIcon;
+      document.getElementById('tiktok-link').innerHTML = tiktokIcon;
+    };
+    </script>
+</head>
+<body>
+    <header>
+      <div class="logo">
+        <img src="https://via.placeholder.com/50x50/e53935/ffffff?text=Logo" alt="Logo" />
+        <h1>Venta de Vehículos Usados</h1>
+      </div>
+      <div class="social-icons">
+        <!-- Facebook color original -->
+        <a href="#" id="facebook-link" title="Facebook" style="background:#1877f3;">
+          <svg width="22" height="22" viewBox="0 0 320 512" fill="#fff" xmlns="http://www.w3.org/2000/svg">
+            <path d="M279.14 288l14.22-92.66h-88.91V141.09c0-25.35 12.42-50.06 52.24-50.06H293V6.26S259.36 0 225.36 0c-73.22 0-121.15 44.38-121.15 124v70.29H22.89V288h81.32v224h100.2V288z"/>
+          </svg>
+        </a>
+        <!-- Instagram color original -->
+        <a href="#" id="instagram-link" title="Instagram" style="background:radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);">
+          <svg width="22" height="22" viewBox="0 0 448 512" fill="#fff" xmlns="http://www.w3.org/2000/svg">
+            <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9 114.9-51.3 114.9-114.9S287.7 141 224.1 141zm0 186c-39.5 0-71.5-32-71.5-71.5s32-71.5 71.5-71.5 71.5 32 71.5 71.5-32 71.5-71.5 71.5zm146.4-194.3c0 14.9-12 26.9-26.9 26.9s-26.9-12-26.9-26.9 12-26.9 26.9-26.9 26.9 12 26.9 26.9zm76.1 27.2c-1.7-35.3-9.9-66.7-36.2-92.1C388.7 9.9 357.3 1.7 322 0 286.7-1.7 256.3 9.9 230.9 36.2 205.5 62.5 197.3 93.9 199 129.2c1.7 35.3 9.9 66.7 36.2 92.1 26.3 25.4 57.7 33.6 93 31.9 35.3-1.7 66.7-9.9 92.1-36.2 25.4-26.3 33.6-57.7 31.9-93z"/>
+          </svg>
+        </a>
+        <!-- TikTok color original -->
+        <a href="#" id="tiktok-link" title="TikTok" style="background:#010101;">
+          <svg width="22" height="22" viewBox="0 0 448 512" fill="#25f4ee" xmlns="http://www.w3.org/2000/svg">
+            <path d="M448,209.9v125.1c0,97.2-78.8,176-176,176s-176-78.8-176-176S174.8,159,272,159c7.1,0,14.1,0.4,21,1.2V0h96v209.9H448z"/>
+          </svg>
+        </a>
+      </div>
+    </header>
+    <!-- Menú principal -->
+    <nav id="mainMenu">
+      <button id="inicioBtn" class="active">Inicio</button>
+      <button id="usadosBtn">Carros Usados</button>
+      <button id="contactoBtn">Contáctenos</button>
+    </nav>
+    <!-- Contenido dinámico -->
+    <div id="mainContent">
+      <div id="inicioContent">
+        <h2 style="text-align:center;margin-top:30px;color:var(--rojo);">Bienvenido a Venta de Vehículos Usados</h2>
+        <p style="text-align:center;">Encuentra el carro usado que buscas, con los mejores precios y garantía.</p>
+      </div>
+      <div id="usadosContent" style="display:none;">
+        <nav id="brandNav"></nav>
+        <div class="filters">
+          <label for="yearFilter">Año:</label>
+          <select id="yearFilter">
+            <option value="">Todos</option>
+            <option value="2018">2018</option>
+            <option value="2019">2019</option>
+            <option value="2020">2020</option>
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>
+          </select>
+          <label for="priceFilter">Precio:</label>
+          <select id="priceFilter">
+            <option value="">Todos</option>
+            <option value="under40">Menos de $40M</option>
+            <option value="40to70">$40M - $70M</option>
+            <option value="over70">Más de $70M</option>
+          </select>
+        </div>
+        <div id="carContainer" class="car-list"></div>
+      </div>
+      <div id="contactoContent" style="display:none;">
+        <h2 style="text-align:center;margin-top:30px;color:var(--rojo);">Contáctenos</h2>
+        <div class="contact-info" style="justify-content:center;">
+          <span>Teléfono: 300 123 4567</span>
+          <span>Email: ventas@autosusados.com</span>
+        </div>
+        <p style="text-align:center;">¡Estamos para ayudarte a encontrar tu próximo vehículo!</p>
+      </div>
+    </div>
+    <footer>
+      &copy; 2025 Venta de Vehículos Usados. Todos los derechos reservados.
+    </footer>
+    <a id="whatsapp-btn" href="https://wa.me/573001234567" target="_blank" title="Contáctanos por WhatsApp">
+      <svg viewBox="0 0 32 32"><path d="M16 3C9.373 3 4 8.373 4 15c0 2.65.87 5.1 2.36 7.1L4 29l7.18-2.33C13.1 27.13 14.52 27.5 16 27.5c6.627 0 12-5.373 12-12S22.627 3 16 3zm0 22c-1.33 0-2.62-.26-3.81-.76l-.27-.11-4.26 1.38 1.4-4.13-.18-.28C6.89 18.01 6 16.56 6 15c0-5.52 4.48-10 10-10s10 4.48 10 10-4.48 10-10 10zm5.07-7.75c-.28-.14-1.65-.81-1.9-.9-.25-.09-.43-.14-.61.14-.18.28-.7.9-.86 1.08-.16.18-.32.2-.6.07-.28-.14-1.18-.44-2.25-1.41-.83-.74-1.39-1.65-1.55-1.93-.16-.28-.02-.43.12-.57.13-.13.28-.34.42-.51.14-.17.18-.29.28-.48.09-.18.05-.36-.02-.5-.07-.14-.61-1.47-.84-2.01-.22-.53-.45-.46-.61-.47-.16-.01-.36-.01-.56-.01-.2 0-.53.08-.81.36-.28.28-1.07 1.05-1.07 2.56 0 1.5 1.09 2.95 1.24 3.16.15.21 2.14 3.28 5.19 4.47.73.31 1.3.5 1.75.64.74.24 1.41.21 1.94.13.59-.09 1.65-.67 1.88-1.32.23-.65.23-1.2.16-1.32-.07-.12-.25-.18-.53-.32z"/></svg>
+    </a>
+</body>
+</html>
